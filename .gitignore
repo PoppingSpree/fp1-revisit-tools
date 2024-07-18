@@ -1,2 +1,17 @@
+# Ignore the actual files in the data folder, those are not free to distribute.
 /Assets.dat
-/images/
+/images/*
+/work/*
+/work/mappings/*
+/work/objects/*
+/work/spawnlists/*
+/work/tokens/*
+
+# But keep the folder structure, so people can grasp what's supposed to be there:
+
+!/images/
+!/work/
+!/work/mappings/
+!/work/objects/
+!/work/spawnlists/
+!/work/tokens/
