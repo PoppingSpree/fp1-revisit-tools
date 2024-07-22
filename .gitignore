@@ -1,5 +1,6 @@
 # Ignore the actual files in the data folder, those are not free to distribute.
 /Assets.dat
+FP1LevelSpawn.cs
 /images/*
 /work/*
 /work/mappings/*

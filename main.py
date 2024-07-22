@@ -16,6 +16,21 @@ def call_script(script_path, in_file, out_folder, num_retries=3):
                 with open('logfile.log', 'a') as f:
                     f.write(f"Script {script_path} failed on file {in_file} after {num_retries} retries\n")
                 return
+            
+# Should probably refactor this eventually but for now I'm just gonna copypaste.
+def call_script_ex(script_path, in_file, in_file2, out_folder, num_retries=3):
+    # out_file = os.path.join(out_folder, os.path.splitext(os.path.basename(in_file))[0])
+    for i in range(num_retries):
+        try:
+            subprocess.run(['python', script_path, in_file, in_file2, out_folder], check=True)
+            return  # If we reach this line, no error was raised, so break out of loop.
+        except subprocess.CalledProcessError:
+            if i < num_retries - 1:  # i is zero indexed
+                continue
+            else:
+                with open('logfile.log', 'a') as f:
+                    f.write(f"Script {script_path} failed on file {in_file} after {num_retries} retries\n")
+                return
 
 
 def modify_and_move_tokens_file(in_file, out_folder):
@@ -84,10 +99,16 @@ def main():
     else:
         for filename in os.listdir(spawn_folder):
             filepath = os.path.join(spawn_folder, filename)
+            
             base_name = filename.replace("_init.txt", "")  # Get the base name from the input file
+            
             out_filename = 'fp1_' + base_name + '.cs'
             out_filepath = os.path.join(unity_folder, out_filename)
-            call_script("convert_spawn_list.py", filepath, out_filepath)
+            
+            mapping_filename = filename.replace("_init.txt", "")
+            mapping_filename = f"{mapping_filename}_mappings.txt"
+            mapping_filepath = os.path.join(mappings_folder, mapping_filename)
+            call_script_ex("convert_spawn_list.py", filepath, mapping_filepath, out_filepath)
 
 if __name__ == "__main__":
     main()
