@@ -35,11 +35,16 @@ def read_image_data(f, offset):
     png_footer = png_data[-12:]
     print(f"PNG footer: {[hex(b) for b in png_footer]}")
 
-    return width, height, png_data
+    return width, height, hot_x, hot_y, png_data
 
 def convert_to_png(width, height, image_data, output_path):
     with open(output_path, 'wb') as png_file:
         png_file.write(image_data)
+
+
+def create_anchor_file(hot_x, hot_y, output_path):
+    with open(output_path, 'w') as anchor_file:
+        anchor_file.write(f'{hot_x},{hot_y}')
 
 
 # Only use this version if we confirmed the png headers in the image data.
@@ -156,17 +161,22 @@ def extract_images(asset_file_path, known_image_count, output_dir):
         for image_index, image_offset in enumerate(all_offsets):
             print(f"\nProcessing image {image_index} at offset {image_offset}")
             try:
-                width, height, image_data = read_image_data(f, image_offset)
+                width, height, hot_x, hot_y, image_data = read_image_data(f, image_offset)
                 output_path = os.path.join(output_dir, f"fp1-img-{image_index}.png")
+                output_path_anchor = os.path.join(output_dir, f"fp1-img-{image_index}.anc")
                 print(f"Attempting to write image: {output_path}")
-                if (dry_run):
+                if dry_run:
                     print(f"Dry Run will NOT write: {output_path}")
-                elif (use_funky_image_encode):
+                elif use_funky_image_encode:
                     convert_to_png_funky(width, height, image_data, output_path)
                     print(f"Successfully wrote image: {output_path}")
+                    create_anchor_file(hot_x, hot_y, output_path_anchor) # Should be an alt version with Active box too?
+                    print(f"Successfully wrote anchors: {output_path_anchor}")
                 else:
                     convert_to_png(width, height, image_data, output_path)
                     print(f"Successfully wrote image: {output_path}")
+                    create_anchor_file(hot_x, hot_y, output_path_anchor)
+                    print(f"Successfully wrote anchors: {output_path_anchor}")
             except Exception as e:
                 print(f"Error processing image {image_index}: {str(e)}")
                 continue  # Move to the next image if there's an error
