@@ -1,6 +1,5 @@
 # Ignore the actual files in the data folder, those are not free to distribute.
 /Assets.dat
-FP1LevelSpawn.cs
 /images/*
 /work/*
 /work/mappings/*
@@ -17,3 +16,4 @@ FP1LevelSpawn.cs
 !/work/spawnlists/
 !/work/tokens/
 !/work/unity/FP1LevelSpawn.cs
+!/work/unity/SpriteConverterCustom.cs
