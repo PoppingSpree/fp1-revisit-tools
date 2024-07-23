@@ -63,10 +63,19 @@ def convert_spawn_list(input_file_path, mapping_file_path, output_file_path):
         print(f"Writing new Unity MonoBehavior Spawnlist to: {output_file_path}")
 
         # Write Sprite and Collider declarations
-        output_file.write("public class SpawnDV1 : FP1LevelSpawn\n{\n")
+        output_file.write(f"public class FP1Frame{int(val_index) + 1} : FP1LevelSpawn\n{{\n")
         output_file.write("    public bool enableScaleUpForFP2SizedCharacters = true;\n\n")
         output_file.write(f"    public bool hasPerformedImageLoad = false;\n\n")
         output_file.write(f"    public string mapping_filename = \"{mapping_filename}\";\n\n")
+
+        output_file.write(f"    public int index = {val_index};\n")
+        output_file.write(f"    public int width = {val_width};\n")
+        output_file.write(f"    public int height = {val_height};\n")
+        output_file.write(f"    public int virtual_width = {val_virtual_width};\n")
+        output_file.write(f"    public int virtual_height = {val_virtual_height};\n\n")
+        # output_file.write(f"    var background_color = new {val_background_color};\n")
+        # output_file.write(f"    int timer_base = 0;\n\n")
+        
         # for obj_name in object_names:
         #     output_file.write(f"    public Sprite {obj_name};\n")
         # output_file.write("\n")
@@ -86,35 +95,28 @@ def convert_spawn_list(input_file_path, mapping_file_path, output_file_path):
         output_file.write("    private Dictionary<string, Sprite> spriteMap = new Dictionary<string, Sprite>();\n\n")
 
 
-        output_file.write("void Start()\n{\n")
-        output_file.write(f"    var index = {val_index};\n")
-        output_file.write(f"    var width = {val_width};\n")
-        output_file.write(f"    var height = {val_height};\n")
-        output_file.write(f"    var virtual_width = {val_virtual_width};\n")
-        output_file.write(f"    var virtual_height = {val_virtual_height};\n")
-        # output_file.write(f"    var background_color = new {val_background_color};\n")
-        # output_file.write(f"    int timer_base = 0;\n\n")
+        output_file.write("    void Start()\n    {\n")
 
-        output_file.write("    if (!hasPerformedImageLoad){\n")
-        output_file.write("        hasPerformedImageLoad = true;\n")
-        output_file.write("        LoadSprites();\n")
-        output_file.write("    }\n")
+        output_file.write("        if (!hasPerformedImageLoad){\n")
+        output_file.write("            hasPerformedImageLoad = true;\n")
+        output_file.write("            LoadSprites();\n")
+        output_file.write("        }\n")
 
-        output_file.write("    if (spawnedLevelContainer == null)\n")
-        output_file.write("    {\n")
-        output_file.write("        spawnedLevelContainer = new GameObject(\"spawnedLevelContainer\");\n")
-        output_file.write("    }\n\n")
+        output_file.write("        if (spawnedLevelContainer == null)\n")
+        output_file.write("        {\n")
+        output_file.write("            spawnedLevelContainer = new GameObject(\"spawnedLevelContainer\");\n")
+        output_file.write("        }\n\n")
 
         for command in spawn_commands:
-            output_file.write(f"    add_background_object({command});\n")
+            output_file.write(f"        add_background_object({command});\n")
 
-        output_file.write("\n    // This needs to happen last in order to scale all of the included objects with it.\n")
-        output_file.write("    if (enableScaleUpForFP2SizedCharacters && spawnedLevelContainer != null)\n")
-        output_file.write("    {\n")
-        output_file.write("        spawnedLevelContainer.transform.localScale = new Vector3(fp2ScaleFactor, fp2ScaleFactor, 0);\n")
-        output_file.write("    }\n")
+        output_file.write("\n        // This needs to happen last in order to scale all of the included objects with it.\n")
+        output_file.write("        if (enableScaleUpForFP2SizedCharacters && spawnedLevelContainer != null)\n")
+        output_file.write("        {\n")
+        output_file.write("            spawnedLevelContainer.transform.localScale = new Vector3(fp2ScaleFactor, fp2ScaleFactor, 0);\n")
+        output_file.write("        }\n")
 
-        output_file.write("}\n\n")
+        output_file.write("    }\n\n")
 
         # Write LoadSprites method
         output_file.write("    private void LoadSprites()\n    {\n")
@@ -146,6 +148,8 @@ def convert_spawn_list(input_file_path, mapping_file_path, output_file_path):
             obj_name_no_create = obj_name.replace("create_", "")
             altered_function = sample_object_create_method_text.replace("dvrockslope9_912", obj_name_no_create)
             output_file.write(altered_function)
+
+        output_file.write("}\n\n")
 
 # Usage convert_spawn_list('path/to/input/spawn_list.txt', 'path/to/output/fp2_spawn_list.cs')
 

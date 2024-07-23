@@ -101,8 +101,9 @@ def main():
             filepath = os.path.join(spawn_folder, filename)
             
             base_name = filename.replace("_init.txt", "")  # Get the base name from the input file
+            base_name = base_name.replace("frame_", "")
             
-            out_filename = 'fp1_' + base_name + '.cs'
+            out_filename = 'FP1Frame' + base_name + '.cs'
             out_filepath = os.path.join(unity_folder, out_filename)
             
             mapping_filename = filename.replace("_init.txt", "")
