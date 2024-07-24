@@ -10,7 +10,7 @@ public class FP1LevelSpawn : MonoBehaviour {
 	public GameObject pfPetal;
 	public static GameObject spawnedLevelContainer;
 	public float fp2ScaleFactor = 1.5f;
-	public static int drawOrder = 0;
+	public static int drawOrder = -10000;
 	
 	// Why is this a nested class???
 	public class BGObjectInfo
@@ -19,7 +19,7 @@ public class FP1LevelSpawn : MonoBehaviour {
 		public int xpos = 0;
 		public int ypos = 0;
 		public Sprite sprite = null;
-		public bool needsCollider = true;
+		public bool needsCollider = false;
 		public bool isNotBGObject = false;
 		public int orderInLayer = 0;
 		public GameObject colliderReferenceObject;
@@ -127,7 +127,42 @@ public class FP1LevelSpawn : MonoBehaviour {
 		{
 			sr.sprite = obj.sprite;
 			sr.sortingOrder = drawOrder;
-			drawOrder--;
+			drawOrder++;
+			
+			var nameLower = obj.name.ToLower();
+			if (nameLower.Contains("backwall"))
+			{
+				obj.needsCollider = false;
+			}
+			else if (nameLower.Contains("edge")
+			      || nameLower.Contains("slope")
+			      || nameLower.Contains("curve")
+			      || nameLower.Contains("wall")
+			      || nameLower.Contains("dvgrass")
+			      || nameLower.Contains("bosstunnel")
+			      )
+			{
+				go.tag = "Terrain Solid";
+				obj.needsCollider = true;
+			}
+			else if (nameLower.Contains("platform"))
+			{
+				go.tag = "Terrain Platform";
+				obj.needsCollider = true;
+			}
+			else if (nameLower.StartsWith("gui")
+			         || nameLower.StartsWith("hud")
+					 || nameLower.StartsWith("levelcard"))
+			{
+				obj.needsCollider = false;
+				sr.enabled = false;
+			}
+			else if (nameLower.Contains("parallax"))
+			{
+				obj.needsCollider = false;
+				// TODO: assign a BG layer instead of a FG layer.
+			}
+
 			if (obj.needsCollider)
 			{
 				var col = go.AddComponent<PolygonCollider2D>();
@@ -141,7 +176,7 @@ public class FP1LevelSpawn : MonoBehaviour {
 
 			if (obj.isNotBGObject)
 			{
-				go.tag = "Terrain Solid";
+				if (String.IsNullOrEmpty(go.tag)) {go.tag = "Terrain Solid";}
 				// FG Plane goes ABCD.
 				switch (layer)
 				{
@@ -150,15 +185,22 @@ public class FP1LevelSpawn : MonoBehaviour {
 						break;
 					case 1:
 						go.layer = LayerMask.NameToLayer("FG Plane B");
+						go.layer = LayerMask.NameToLayer("FG Plane A");
+						sr.sortingOrder += 1000;
 						break;
 					case 2:
 						go.layer = LayerMask.NameToLayer("FG Plane C");
+						go.layer = LayerMask.NameToLayer("FG Plane A");
+						sr.sortingOrder += 2000;
 						break;
 					case 3:
 						go.layer = LayerMask.NameToLayer("FG Plane D");
+						go.layer = LayerMask.NameToLayer("FG Plane A");
+						sr.sortingOrder += 3000;
 						break;
 					default:
 						go.layer = LayerMask.NameToLayer("FG Plane A");
+						sr.sortingOrder -= 1000;
 						break;
 				}
 			}
@@ -231,15 +273,22 @@ public class FP1LevelSpawn : MonoBehaviour {
 						break;
 					case 1:
 						go.layer = LayerMask.NameToLayer("FG Plane B");
+						go.layer = LayerMask.NameToLayer("FG Plane A");
+						sr.sortingOrder += 1000;
 						break;
 					case 2:
 						go.layer = LayerMask.NameToLayer("FG Plane C");
+						go.layer = LayerMask.NameToLayer("FG Plane A");
+						sr.sortingOrder += 2000;
 						break;
 					case 3:
 						go.layer = LayerMask.NameToLayer("FG Plane D");
+						go.layer = LayerMask.NameToLayer("FG Plane A");
+						sr.sortingOrder += 3000;
 						break;
 					default:
 						go.layer = LayerMask.NameToLayer("FG Plane A");
+						sr.sortingOrder -= 1000;
 						break;
 				}
 			}
