@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -8,8 +8,9 @@ public class FP1LevelSpawn : MonoBehaviour {
 	public Sprite playerstartingpoint_381;
 	public GameObject pfCrystal;
 	public GameObject pfPetal;
-	private static GameObject spawnedLevelContainer;
-	private float fp2ScaleFactor = 1.5f;
+	public static GameObject spawnedLevelContainer;
+	public float fp2ScaleFactor = 1.5f;
+	public static int drawOrder = 0;
 	
 	// Why is this a nested class???
 	public class BGObjectInfo
@@ -103,12 +104,21 @@ public class FP1LevelSpawn : MonoBehaviour {
 		{
 			return;
 		}
+		else
+		{
+			obj.isNotBGObject = true;
+			obj.needsCollider = true;
+		}
 
 		add_background_object(obj, layer);
 	}
 
 	public static void add_background_object(BGObjectInfo obj, int layer)
 	{
+		
+
+		// And now the normal code.
+
 		GameObject go = new GameObject(obj.name);
 		SpriteRenderer sr = go.AddComponent<SpriteRenderer>();
 		sr.sortingOrder = obj.orderInLayer;
@@ -116,6 +126,8 @@ public class FP1LevelSpawn : MonoBehaviour {
 		if (obj.sprite != null)
 		{
 			sr.sprite = obj.sprite;
+			sr.sortingOrder = drawOrder;
+			drawOrder--;
 			if (obj.needsCollider)
 			{
 				var col = go.AddComponent<PolygonCollider2D>();
@@ -127,7 +139,110 @@ public class FP1LevelSpawn : MonoBehaviour {
 				// Somehow set menuWorldMap.menuWorldMapConfirm.SceneToLoad[currentStageID] = name of this stage.
 			}
 
-			go.layer = LayerMask.NameToLayer("FG Plane A");
+			if (obj.isNotBGObject)
+			{
+				go.tag = "Terrain Solid";
+				// FG Plane goes ABCD.
+				switch (layer)
+				{
+					case 0:
+						go.layer = LayerMask.NameToLayer("FG Plane A");
+						break;
+					case 1:
+						go.layer = LayerMask.NameToLayer("FG Plane B");
+						break;
+					case 2:
+						go.layer = LayerMask.NameToLayer("FG Plane C");
+						break;
+					case 3:
+						go.layer = LayerMask.NameToLayer("FG Plane D");
+						break;
+					default:
+						go.layer = LayerMask.NameToLayer("FG Plane A");
+						break;
+				}
+			}
+			else
+			{
+				// BG Layer goes 0-15.
+				// Contrary to the naming implications, 
+				// BG Layers are sticky relative to the camera,
+				// So most of these should actually be on the FG Layers instead.
+				/*
+				switch (layer)
+				{
+					case 0:
+						go.layer = LayerMask.NameToLayer("BG Layer 0");
+						break;
+					case 1:
+						go.layer = LayerMask.NameToLayer("BG Layer 1");
+						break;
+					case 2:
+						go.layer = LayerMask.NameToLayer("BG Layer 2");
+						break;
+					case 3:
+						go.layer = LayerMask.NameToLayer("BG Layer 3");
+						break;
+					case 4:
+						go.layer = LayerMask.NameToLayer("BG Layer 4");
+						break;
+					case 5:
+						go.layer = LayerMask.NameToLayer("BG Layer 5");
+						break;
+					case 6:
+						go.layer = LayerMask.NameToLayer("BG Layer 6");
+						break;
+					case 7:
+						go.layer = LayerMask.NameToLayer("BG Layer 7");
+						break;
+					case 8:
+						go.layer = LayerMask.NameToLayer("BG Layer 8");
+						break;
+					case 9:
+						go.layer = LayerMask.NameToLayer("BG Layer 9");
+						break;
+					case 10:
+						go.layer = LayerMask.NameToLayer("BG Layer 10");
+						break;
+					case 11:
+						go.layer = LayerMask.NameToLayer("BG Layer 11");
+						break;
+					case 12:
+						go.layer = LayerMask.NameToLayer("BG Layer 12");
+						break;
+					case 13:
+						go.layer = LayerMask.NameToLayer("BG Layer 13");
+						break;
+					case 14:
+						go.layer = LayerMask.NameToLayer("BG Layer 14");
+						break;
+					case 15:
+						go.layer = LayerMask.NameToLayer("BG Layer 15");
+						break;
+					default:
+						go.layer = LayerMask.NameToLayer("BG Layer 0");
+						break;
+				}
+				*/
+				switch (layer)
+				{
+					case 0:
+						go.layer = LayerMask.NameToLayer("FG Plane A");
+						break;
+					case 1:
+						go.layer = LayerMask.NameToLayer("FG Plane B");
+						break;
+					case 2:
+						go.layer = LayerMask.NameToLayer("FG Plane C");
+						break;
+					case 3:
+						go.layer = LayerMask.NameToLayer("FG Plane D");
+						break;
+					default:
+						go.layer = LayerMask.NameToLayer("FG Plane A");
+						break;
+				}
+			}
 		}
 		else
 		{
