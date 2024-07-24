@@ -61,6 +61,12 @@ def convert_spawn_list(input_file_path, mapping_file_path, output_file_path):
 
     with open(output_file_path, 'w') as output_file:
         print(f"Writing new Unity MonoBehavior Spawnlist to: {output_file_path}")
+        src_includes = """using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+"""
+        output_file.write(src_includes)
 
         # Write Sprite and Collider declarations
         output_file.write(f"public class FP1Frame{int(val_index) + 1} : FP1LevelSpawn\n{{\n")
@@ -109,6 +115,24 @@ def convert_spawn_list(input_file_path, mapping_file_path, output_file_path):
 
         for command in spawn_commands:
             output_file.write(f"        add_background_object({command});\n")
+            
+        # Setting the Camera Bounds for Fall KO.
+        src_set_camera_bounds = """var stageCam = GameObject.Find("Stage Camera");
+        if (stageCam != null)
+        {
+            var fpCam = stageCam.GetComponent<FPCamera>();
+            fpCam.parallaxLayers[0].xSize = width;
+            fpCam.parallaxLayers[0].ySize = height;
+            if (enableScaleUpForFP2SizedCharacters && spawnedLevelContainer != null)
+            {
+                fpCam.parallaxLayers[0].xSize *= fp2ScaleFactor;
+                fpCam.parallaxLayers[0].ySize *= fp2ScaleFactor;
+            }
+        }
+        
+        """
+
+        output_file.write(src_set_camera_bounds)
 
         output_file.write("\n        // This needs to happen last in order to scale all of the included objects with it.\n")
         output_file.write("        if (enableScaleUpForFP2SizedCharacters && spawnedLevelContainer != null)\n")
