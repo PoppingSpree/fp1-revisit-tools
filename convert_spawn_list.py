@@ -81,7 +81,7 @@ using UnityEngine;
         output_file.write(f"    public int virtual_height = {val_virtual_height};\n\n")
         # output_file.write(f"    var background_color = new {val_background_color};\n")
         # output_file.write(f"    int timer_base = 0;\n\n")
-        
+
         # for obj_name in object_names:
         #     output_file.write(f"    public Sprite {obj_name};\n")
         # output_file.write("\n")
@@ -100,7 +100,6 @@ using UnityEngine;
         output_file.write("    // Dictionary to store sprite mappings\n")
         output_file.write("    private Dictionary<string, Sprite> spriteMap = new Dictionary<string, Sprite>();\n\n")
 
-
         output_file.write("    void Start()\n    {\n")
 
         output_file.write("        if (!hasPerformedImageLoad){\n")
@@ -115,7 +114,9 @@ using UnityEngine;
 
         for command in spawn_commands:
             output_file.write(f"        add_background_object({command});\n")
-            
+
+        # TODO: replace all cases that refer to a "parent" with either 0s, or comment out the whole line. 
+
         # Setting the Camera Bounds for Fall KO.
         src_set_camera_bounds = """var stageCam = GameObject.Find("Stage Camera");
         if (stageCam != null)
@@ -134,10 +135,12 @@ using UnityEngine;
 
         output_file.write(src_set_camera_bounds)
 
-        output_file.write("\n        // This needs to happen last in order to scale all of the included objects with it.\n")
+        output_file.write(
+            "\n        // This needs to happen last in order to scale all of the included objects with it.\n")
         output_file.write("        if (enableScaleUpForFP2SizedCharacters && spawnedLevelContainer != null)\n")
         output_file.write("        {\n")
-        output_file.write("            spawnedLevelContainer.transform.localScale = new Vector3(fp2ScaleFactor, fp2ScaleFactor, 0);\n")
+        output_file.write(
+            "            spawnedLevelContainer.transform.localScale = new Vector3(fp2ScaleFactor, fp2ScaleFactor, 0);\n")
         output_file.write("        }\n")
 
         output_file.write("    }\n\n")
@@ -146,14 +149,17 @@ using UnityEngine;
         output_file.write("    private void LoadSprites()\n    {\n")
         output_file.write("        string spritePath = \"Sprites/FP1/\";\n")
 
-        output_file.write(f"        // Remember: For this to work you would have to put the assets in a Resources folder\n")
-        output_file.write(f"        // And treat that Resources folder as if it's the root (you can have many Resource folders).\n")
+        output_file.write(
+            f"        // Remember: For this to work you would have to put the assets in a Resources folder\n")
+        output_file.write(
+            f"        // And treat that Resources folder as if it's the root (you can have many Resource folders).\n")
         output_file.write(f"        // So in this case: Assets/YourName/Resources/Sprites/FP1/\n")
         for obj_name, sprite_file in mapping_no_create.items():
-            output_file.write(f"        {obj_name} = Resources.Load<Sprite>(spritePath + \"{sprite_file.replace('.png', '')}\");\n")
+            output_file.write(
+                f"        {obj_name} = Resources.Load<Sprite>(spritePath + \"{sprite_file.replace('.png', '')}\");\n")
         output_file.write("    }\n\n")
 
-        sample_object_create_method_text= """
+        sample_object_create_method_text = """
     public BGObjectInfo create_dvrockslope9_912(int xpos, int ypos)
 	{
 		BGObjectInfo obj = new BGObjectInfo();
@@ -174,6 +180,7 @@ using UnityEngine;
             output_file.write(altered_function)
 
         output_file.write("}\n\n")
+
 
 # Usage convert_spawn_list('path/to/input/spawn_list.txt', 'path/to/output/fp2_spawn_list.cs')
 
